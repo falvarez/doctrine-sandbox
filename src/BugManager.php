@@ -2,7 +2,7 @@
 
 class BugManager extends AbstractManager
 {
-    const REPOSITORY = 'Bug';
+    const REPOSITORY = Bug::class;
 
     /**
      * @param int $reporterId
@@ -25,7 +25,7 @@ class BugManager extends AbstractManager
         $bug = new Bug();
         $bug->setDescription("Something does not work!");
         $bug->setCreated(new DateTime("now"));
-        $bug->setStatus("OPEN");
+        $bug->setStatus(Bug::STATUS_OPEN);
 
         $productManager = new ProductManager($this->entityManager);
         foreach ($productIds as $productId) {
@@ -57,5 +57,33 @@ class BugManager extends AbstractManager
         }
 
         return $query->getResult();
+    }
+
+    /**
+     * @param int $userId
+     * @return Bug[]
+     */
+    public function findAllByUserEngineerOrReporter($userId)
+    {
+        $dql = "SELECT b, e, r FROM Bug b JOIN b.engineer e JOIN b.reporter r ".
+            "WHERE b.status = 'OPEN' AND (e.id = ?1 OR r.id = ?1) ORDER BY b.created DESC";
+
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameter(1, $userId);
+        $query->setMaxResults(15);
+
+        return $query->getResult();
+    }
+
+    /**
+     * @return array
+     */
+    public function getAllProductsOpenBugs()
+    {
+        $dql = "SELECT p.id, p.name, count(b.id) AS openBugs FROM Bug b ".
+            "JOIN b.products p WHERE b.status = 'OPEN' GROUP BY p.id";
+
+        $query = $this->entityManager->createQuery($dql);
+        return $query->getScalarResult();
     }
 }

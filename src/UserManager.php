@@ -2,7 +2,7 @@
 
 class UserManager extends AbstractManager
 {
-    const REPOSITORY = 'User';
+    const REPOSITORY = User::class;
 
     /**
      * @param string $name

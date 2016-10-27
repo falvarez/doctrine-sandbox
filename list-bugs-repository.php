@@ -4,10 +4,7 @@
 /** @var Doctrine\ORM\EntityManager $entityManager */
 $entityManager = require_once 'bootstrap.php';
 
-$bugManager = new BugManager($entityManager);
-
-/** @var Bug[] $bugs */
-$bugs = $bugManager->findAll();
+$bugs = $entityManager->getRepository(Bug::class)->getRecentBugs();
 
 foreach ($bugs as $bug) {
     echo $bug->getDescription()." - ".$bug->getCreated()->format('d.m.Y')."\n";

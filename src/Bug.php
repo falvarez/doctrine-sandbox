@@ -6,12 +6,17 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\Table;
 
 /**
- * @Entity @Table(name="bugs")
+ * @Entity(repositoryClass="BugRepository")
+ * @Table(name="bugs")
  */
 class Bug
 {
+    const STATUS_OPEN = 'OPEN';
+    const STATUS_CLOSED = 'CLOSED';
+
     /**
      * @Id @Column(type="integer") @GeneratedValue
      * @var int
@@ -30,6 +35,7 @@ class Bug
     /**
      * @Column(type="string")
      * @var string
+     * @Enum {self::STATUS_OPEN, self::STATUS_CLOSED}
      */
     protected $status;
 
@@ -81,12 +87,12 @@ class Bug
 
     /**
      * @var User $engineer
-     * @ManyToOne(targetEntity="User", inversedBy="assignedBugs")
+     * @ManyToOne(targetEntity="User", inversedBy="assignedBugs", fetch="EXTRA_LAZY")
      **/
     protected $engineer = null;
     /**
      * @var User $reporter
-     * @ManyToOne(targetEntity="User", inversedBy="reportedBugs")
+     * @ManyToOne(targetEntity="User", inversedBy="reportedBugs", fetch="EXTRA_LAZY")
      */
     protected $reporter = null;
 
@@ -127,5 +133,10 @@ class Bug
     public function getProducts()
     {
         return $this->products;
+    }
+
+    public function close()
+    {
+        $this->status = self::STATUS_CLOSED;
     }
 }

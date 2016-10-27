@@ -20,3 +20,6 @@ foreach ($bugs as $bug) {
     }
     echo "\n";
 }
+
+global $doctrineDebugStack;
+echo (count($doctrineDebugStack->queries) . " queries performed\n");

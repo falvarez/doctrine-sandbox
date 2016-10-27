@@ -11,7 +11,7 @@
 
 class ProductManager extends AbstractManager
 {
-    const REPOSITORY = 'Product';
+    const REPOSITORY = Product::class;
 
     /**
      * @param string $name

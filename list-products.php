@@ -9,3 +9,6 @@ $productManager = new ProductManager($entityManager);
 foreach ($productManager->findAll() as $product) {
     echo sprintf("-%s\n", $product->getName());
 }
+
+global $doctrineDebugStack;
+echo (count($doctrineDebugStack->queries) . " queries performed\n");

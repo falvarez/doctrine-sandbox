@@ -1,5 +1,13 @@
 <?php
 
+use Doctrine\DBAL\Logging\DebugStack;
+
 require_once 'vendor/autoload.php';
 
-return (new DoctrineProvider(__DIR__))->getEntityManager();
+global $doctrineDebugStack;
+
+$doctrineDebugStack = new DebugStack();
+$entityManager = (new DoctrineProvider(__DIR__))->getEntityManager();
+$entityManager->getConfiguration()->setSQLLogger($doctrineDebugStack);
+
+return $entityManager;

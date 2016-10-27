@@ -11,6 +11,8 @@ class DoctrineProvider
     public function __construct($path)
     {
         $this->path = $path;
+        $this->proxyPath = $path . '/proxy';
+        @mkdir($this->proxyPath, 0777, true);
     }
 
     /**
@@ -20,11 +22,18 @@ class DoctrineProvider
     {
         if (null === $this->entityManager) {
             // Create a simple "default" Doctrine ORM configuration for Annotations
-            $isDevMode = true;
-            $config = Setup::createAnnotationMetadataConfiguration(array($this->path . "/src"), $isDevMode);
+            // If $isDevMode is true caching is done in memory with the ArrayCache. Proxy objects are recreated on every request.
+            // If $isDevMode is false, check for Caches in the order APC, Xcache, Memcache (127.0.0.1:11211), Redis (127.0.0.1:6379) unless $cache is passed as fourth argument.
+            // If $isDevMode is false, set then proxy classes have to be explicitly created through the command line.
+            // If third argument $proxyDir is not set, use the systems temporary directory.
+            $isDevMode = false;
+            // Path points to entity files
+            $config = Setup::createAnnotationMetadataConfiguration(array($this->path . "/src"), $isDevMode, $this->proxyPath);
+            $config->setAutoGenerateProxyClasses(true);
+
             // or if you prefer yaml or XML
-            //$config = Setup::createXMLMetadataConfiguration(array(__DIR__."/config/xml"), $isDevMode);
-            //$config = Setup::createYAMLMetadataConfiguration(array(__DIR__."/config/yaml"), $isDevMode);
+            //$config = Setup::createXMLMetadataConfiguration(array($this->path . "/config/xml"), $isDevMode);
+            //$config = Setup::createYAMLMetadataConfiguration(array($this->path . "/config/yaml"), $isDevMode);
 
             // database configuration parameters
             $conn = array(
