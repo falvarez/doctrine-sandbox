@@ -5,6 +5,7 @@
 $entityManager = require_once 'bootstrap.php';
 
 $bugs = $entityManager->getRepository(Bug::class)->getRecentBugs();
+$bug = $entityManager->getRepository(Bug::class)->find($id);
 
 foreach ($bugs as $bug) {
     echo $bug->getDescription()." - ".$bug->getCreated()->format('d.m.Y')."\n";
